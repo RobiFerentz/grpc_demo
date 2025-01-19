@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "grpc:client": "deno run --allow-env --allow-net client.ts",
+    "bun:grpc_client": "bun run client.ts",
+    "gen_ts": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ protobuf/*.proto"
+  },
+  "devDependencies": {
+    "protoc-gen-ts": "^0.8.7"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13",
+    "google-protobuf": "^3.21.4",
+    "protobufjs": "^7.4.0"
+  }
+}

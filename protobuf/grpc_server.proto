@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option go_package = "github.com/robertferentz/grpc-go/server/protobuf";
+
+package grpcgo.protobuf;
+
+service GrpcServer {
+    rpc Ping(PingRequest) returns (PingResponse);
+    rpc ChangePage(ChangePageRequest) returns (ChangePageResponse);
+    rpc AllPages(EmptyRequest) returns (AllPagesResponse);
+}
+
+message EmptyRequest {}
+
+message PingRequest {
+    string message = 1;
+}
+
+message PingResponse {
+    string message = 1;
+}
+
+message ChangePageRequest {
+    string page = 1;
+}
+
+message ChangePageResponse {
+    bool success = 1;
+}
+
+message AllPagesResponse {
+    repeated string pages = 1;
+}
