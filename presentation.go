@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	glamour "github.com/charmbracelet/glamour"
+
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -48,7 +50,12 @@ func (m presentationModel) View() string {
 	if err != nil {
 		panic(err)
 	}
-	return string(content)
+	str, err := glamour.Render(string(content), "dark")
+	if err != nil {
+		panic(err)
+	}
+	return str
+
 }
 
 type changePageMsg struct {
