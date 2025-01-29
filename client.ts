@@ -1,7 +1,7 @@
 import { loadPackageDefinition, credentials } from '@grpc/grpc-js'
 import loader from '@grpc/proto-loader'
 import { join } from 'path'
-import { ProtoGrpcType } from './proto/grpc_server'
+import type { ProtoGrpcType } from './proto/grpc_server'
 
 const protoPath = join(__dirname, 'protobuf/grpc_server.proto')
 const def = loader.loadSync(protoPath, { keepCase: true, longs: String, enums: String, defaults: true, oneofs: true })
@@ -33,12 +33,13 @@ async function main() {
   process.stdin.on('data', (data) => {
     switch (data.toString().trim()) {
       case 'q':
+        process.stdout.write('\n')
         process.exit()
       case 'p':
-        pageIndex--
-        if (pageIndex < 0) {
-          pageIndex = 0
+        if (pageIndex === 0) {
+          return
         }
+        pageIndex--
         client.changePage({ page: pages[pageIndex] }, (err, _response) => {
           if (err) {
             console.error(err)
@@ -47,10 +48,10 @@ async function main() {
         })
         break
       case 'n':
-        pageIndex++
-        if (pageIndex >= pages.length) {
-          pageIndex = pages.length - 1
+        if (pageIndex === pages.length - 1) {
+          return
         }
+        pageIndex++
         client.changePage({ page: pages[pageIndex] }, (err, _response) => {
           if (err) {
             console.error(err)
