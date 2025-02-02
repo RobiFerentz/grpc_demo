@@ -19,46 +19,57 @@ async function main() {
     resolve(response?.pages || [])
   })
   const pages = await allPagesPromise
+  const handleQuit = () => {
+    process.stdout.write('\n')
+    process.exit()
+  }
+
+  const handleRestart = () => {
+    pageIndex = 0
+    client.changePage({ page: pages[pageIndex] }, (err, _response) => {
+      if (err) {
+        console.error(err)
+      }
+    })
+  }
+
+  const handlePrevious = () => {
+    if (pageIndex > 0) {
+      pageIndex -= 1
+      client.changePage({ page: pages[pageIndex] }, (err, _response) => {
+        if (err) {
+          console.error(err)
+        }
+      })
+    }
+  }
+
+  const handleNext = () => {
+    if (pageIndex < pages.length - 1) {
+      pageIndex += 1
+      client.changePage({ page: pages[pageIndex] }, (err, _response) => {
+        if (err) {
+          console.error(err)
+        }
+      })
+    }
+  }
 
   process.stdout.write('(q)uit, (r)estart, (p)revious, (n)ext >')
   process.stdin.setRawMode(true)
   process.stdin.on('data', (data) => {
     switch (data.toString().trim()) {
       case 'q':
-        process.stdout.write('\n')
-        process.exit()
+        handleQuit()
+        break
       case 'r':
-        pageIndex = 0
-        client.changePage({ page: pages[pageIndex] }, (err, _response) => {
-          if (err) {
-            console.error(err)
-            return
-          }
-        })
+        handleRestart()
         break
       case 'p':
-        if (pageIndex === 0) {
-          return
-        }
-        pageIndex--
-        client.changePage({ page: pages[pageIndex] }, (err, _response) => {
-          if (err) {
-            console.error(err)
-            return
-          }
-        })
+        handlePrevious()
         break
       case 'n':
-        if (pageIndex === pages.length - 1) {
-          return
-        }
-        pageIndex++
-        client.changePage({ page: pages[pageIndex] }, (err, _response) => {
-          if (err) {
-            console.error(err)
-            return
-          }
-        })
+        handleNext()
         break
     }
   })
