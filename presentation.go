@@ -46,6 +46,7 @@ func initModel() presentationModel {
 
 	renderer, err = glamour.NewTermRenderer(
 		glamour.WithWordWrap(width-vp.Style.GetHorizontalFrameSize()-2),
+		glamour.WithEmoji(),
 		glamour.WithStylesFromJSONFile("./styles/tikal_tui.json"))
 	if err != nil {
 		panic(err)

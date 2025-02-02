@@ -26,10 +26,18 @@
     "bold": true
   },
   "h2": {
-    "prefix": "## "
+    "color": "#FFF",
+    "background_color": "#F47720",
+    "prefix": ">> ",
+    "suffix": " <<",
+    "bold": true
   },
   "h3": {
-    "prefix": "### "
+    "color": "#F47720",
+    "background_color": "#FFF",
+    "prefix": "--> ",
+    "suffix": " <--",
+    "bold": false
   },
   "h4": {
     "prefix": "#### "
@@ -57,10 +65,10 @@
     "format": "\n--------\n"
   },
   "item": {
-    "block_prefix": "• "
+    "block_prefix": "👉🏻 "
   },
   "enumeration": {
-    "block_prefix": ". "
+    "block_prefix": ") "
   },
   "task": {
     "ticked": "[✓] ",
