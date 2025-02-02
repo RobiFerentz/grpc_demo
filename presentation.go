@@ -9,18 +9,24 @@ import (
 
 	glamour "github.com/charmbracelet/glamour"
 
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 var presentation *tea.Program
+var renderer *glamour.TermRenderer
 var pageMap = make(map[string]string)
 
 type presentationModel struct {
 	currentPage string
 	pages       []string
+	vp          viewport.Model
 }
 
 func initModel() presentationModel {
+	width := 100
+	height := 28
 	pages, err := getPageList()
 	if err != nil || len(pages) < 1 {
 		panic("failed to get page list")
@@ -32,9 +38,21 @@ func initModel() presentationModel {
 		}
 		pageMap[page] = string(content)
 	}
+	vp := viewport.New(width, height)
+	vp.Style = lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#F47720")).
+		PaddingRight(2).PaddingLeft(2).PaddingTop(1).PaddingBottom(1)
+
+	renderer, err = glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(width-vp.Style.GetHorizontalFrameSize()-2))
+	if err != nil {
+		panic(err)
+	}
+
 	return presentationModel{
 		currentPage: pages[0],
 		pages:       pages,
+		vp:          vp,
 	}
 }
 
@@ -49,11 +67,14 @@ func startServer() tea.Msg {
 
 func (m presentationModel) View() string {
 	content := pageMap[m.currentPage]
-	str, err := glamour.Render(content, "dark")
+
+	str, err := renderer.Render(content)
 	if err != nil {
 		panic(err)
 	}
-	return str
+	m.vp.SetContent(str)
+
+	return m.vp.View()
 }
 
 type changePageMsg struct {
@@ -70,6 +91,10 @@ func (m presentationModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "q", "ctrl+c":
 			return m, tea.Quit
+		default:
+			var cmd tea.Cmd
+			m.vp, cmd = m.vp.Update(msg)
+			return m, cmd
 		}
 	}
 
