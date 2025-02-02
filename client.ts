@@ -9,14 +9,6 @@ const pb = loadPackageDefinition(def) as unknown as ProtoGrpcType
 
 async function main() {
   const client = new pb.grpcgo.protobuf.GrpcServer('localhost:50051', credentials.createInsecure())
-
-  // client.ping({ message: 'world' }, (err, response) => {
-  //   if (err) {
-  //     console.error(err)
-  //     return
-  //   }
-  //   console.log(response?.message)
-  // })
   let pageIndex = 0
   const { resolve, reject, promise: allPagesPromise } = Promise.withResolvers<string[]>()
   client.allPages({}, (err, response) => {
@@ -28,13 +20,22 @@ async function main() {
   })
   const pages = await allPagesPromise
 
-  process.stdout.write('(q)uit, (p)revious, (n)ext >')
+  process.stdout.write('(q)uit, (r)estart, (p)revious, (n)ext >')
   process.stdin.setRawMode(true)
   process.stdin.on('data', (data) => {
     switch (data.toString().trim()) {
       case 'q':
         process.stdout.write('\n')
         process.exit()
+      case 'r':
+        pageIndex = 0
+        client.changePage({ page: pages[pageIndex] }, (err, _response) => {
+          if (err) {
+            console.error(err)
+            return
+          }
+        })
+        break
       case 'p':
         if (pageIndex === 0) {
           return
