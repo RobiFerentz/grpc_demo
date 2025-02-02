@@ -41,8 +41,8 @@ func initModel() presentationModel {
 	vp := viewport.New(width, height)
 	vp.Style = lipgloss.NewStyle().
 		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#F47720")).
-		PaddingRight(2).PaddingLeft(2).PaddingTop(1).PaddingBottom(1)
+		BorderForeground(lipgloss.Color("#000")).
+		PaddingRight(2).PaddingLeft(2).BorderBackground(lipgloss.Color("#F47720"))
 
 	renderer, err = glamour.NewTermRenderer(
 		glamour.WithWordWrap(width-vp.Style.GetHorizontalFrameSize()-2),
