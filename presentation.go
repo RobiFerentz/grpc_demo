@@ -44,7 +44,9 @@ func initModel() presentationModel {
 		BorderForeground(lipgloss.Color("#F47720")).
 		PaddingRight(2).PaddingLeft(2).PaddingTop(1).PaddingBottom(1)
 
-	renderer, err = glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithWordWrap(width-vp.Style.GetHorizontalFrameSize()-2))
+	renderer, err = glamour.NewTermRenderer(
+		glamour.WithWordWrap(width-vp.Style.GetHorizontalFrameSize()-2),
+		glamour.WithStylesFromJSONFile("./styles/tikal_tui.json"))
 	if err != nil {
 		panic(err)
 	}
