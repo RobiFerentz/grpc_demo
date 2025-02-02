@@ -13,6 +13,7 @@ import (
 )
 
 var presentation *tea.Program
+var pageMap = make(map[string]string)
 
 type presentationModel struct {
 	currentPage string
@@ -23,6 +24,13 @@ func initModel() presentationModel {
 	pages, err := getPageList()
 	if err != nil || len(pages) < 1 {
 		panic("failed to get page list")
+	}
+	for _, page := range pages {
+		content, err := os.ReadFile(fmt.Sprintf("./pages/%s.md", page))
+		if err != nil {
+			panic(err)
+		}
+		pageMap[page] = string(content)
 	}
 	return presentationModel{
 		currentPage: pages[0],
@@ -39,23 +47,13 @@ func startServer() tea.Msg {
 	return nil
 }
 
-// func changePage(page string) tea.Cmd {
-// 	return func() tea.Msg {
-// 		return changePageMsg{page: page}
-// 	}
-// }
-
 func (m presentationModel) View() string {
-	content, err := os.ReadFile(fmt.Sprintf("./pages/%s.md", m.currentPage))
-	if err != nil {
-		panic(err)
-	}
-	str, err := glamour.Render(string(content), "dark")
+	content := pageMap[m.currentPage]
+	str, err := glamour.Render(content, "dark")
 	if err != nil {
 		panic(err)
 	}
 	return str
-
 }
 
 type changePageMsg struct {
