@@ -17,6 +17,7 @@ export interface ProtoGrpcType {
       GrpcServer: SubtypeConstructor<typeof grpc.Client, _grpcgo_protobuf_GrpcServerClient> & { service: _grpcgo_protobuf_GrpcServerDefinition }
       PingRequest: MessageTypeDefinition
       PingResponse: MessageTypeDefinition
+      UpTimeResponse: MessageTypeDefinition
     }
   }
 }

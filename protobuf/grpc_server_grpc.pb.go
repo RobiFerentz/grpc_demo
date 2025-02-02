@@ -22,6 +22,7 @@ const (
 	GrpcServer_Ping_FullMethodName       = "/grpcgo.protobuf.GrpcServer/Ping"
 	GrpcServer_ChangePage_FullMethodName = "/grpcgo.protobuf.GrpcServer/ChangePage"
 	GrpcServer_AllPages_FullMethodName   = "/grpcgo.protobuf.GrpcServer/AllPages"
+	GrpcServer_UpTime_FullMethodName     = "/grpcgo.protobuf.GrpcServer/UpTime"
 )
 
 // GrpcServerClient is the client API for GrpcServer service.
@@ -31,6 +32,7 @@ type GrpcServerClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 	ChangePage(ctx context.Context, in *ChangePageRequest, opts ...grpc.CallOption) (*ChangePageResponse, error)
 	AllPages(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*AllPagesResponse, error)
+	UpTime(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[UpTimeResponse], error)
 }
 
 type grpcServerClient struct {
@@ -71,6 +73,25 @@ func (c *grpcServerClient) AllPages(ctx context.Context, in *EmptyRequest, opts 
 	return out, nil
 }
 
+func (c *grpcServerClient) UpTime(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[UpTimeResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &GrpcServer_ServiceDesc.Streams[0], GrpcServer_UpTime_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[EmptyRequest, UpTimeResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type GrpcServer_UpTimeClient = grpc.ServerStreamingClient[UpTimeResponse]
+
 // GrpcServerServer is the server API for GrpcServer service.
 // All implementations must embed UnimplementedGrpcServerServer
 // for forward compatibility.
@@ -78,6 +99,7 @@ type GrpcServerServer interface {
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
 	ChangePage(context.Context, *ChangePageRequest) (*ChangePageResponse, error)
 	AllPages(context.Context, *EmptyRequest) (*AllPagesResponse, error)
+	UpTime(*EmptyRequest, grpc.ServerStreamingServer[UpTimeResponse]) error
 	mustEmbedUnimplementedGrpcServerServer()
 }
 
@@ -96,6 +118,9 @@ func (UnimplementedGrpcServerServer) ChangePage(context.Context, *ChangePageRequ
 }
 func (UnimplementedGrpcServerServer) AllPages(context.Context, *EmptyRequest) (*AllPagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllPages not implemented")
+}
+func (UnimplementedGrpcServerServer) UpTime(*EmptyRequest, grpc.ServerStreamingServer[UpTimeResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method UpTime not implemented")
 }
 func (UnimplementedGrpcServerServer) mustEmbedUnimplementedGrpcServerServer() {}
 func (UnimplementedGrpcServerServer) testEmbeddedByValue()                    {}
@@ -172,6 +197,17 @@ func _GrpcServer_AllPages_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GrpcServer_UpTime_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(EmptyRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(GrpcServerServer).UpTime(m, &grpc.GenericServerStream[EmptyRequest, UpTimeResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type GrpcServer_UpTimeServer = grpc.ServerStreamingServer[UpTimeResponse]
+
 // GrpcServer_ServiceDesc is the grpc.ServiceDesc for GrpcServer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +228,12 @@ var GrpcServer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GrpcServer_AllPages_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "UpTime",
+			Handler:       _GrpcServer_UpTime_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "protobuf/grpc_server.proto",
 }
