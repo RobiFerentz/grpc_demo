@@ -75,7 +75,17 @@ func (m presentationModel) View() string {
 	if err != nil {
 		panic(err)
 	}
-	m.vp.SetContent(str)
+
+	barStyle := lipgloss.NewStyle().AlignHorizontal(lipgloss.Center).Foreground(lipgloss.Color("#888")).Width(90).PaddingBottom(1)
+	pageNum, err := strconv.Atoi(m.currentPage)
+
+	if err != nil {
+		panic(err)
+	}
+	pageNum++
+	pageStr := strconv.Itoa(pageNum)
+	bar := lipgloss.JoinHorizontal(lipgloss.Top, "Page: "+(pageStr))
+	m.vp.SetContent(barStyle.Render(bar) + str)
 
 	return m.vp.View()
 }
