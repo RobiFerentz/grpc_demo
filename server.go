@@ -17,6 +17,7 @@ func run_server() {
 		if err != nil {
 			log.Fatalf("failed to listen: %v", err)
 		}
+		defer lis.Close()
 		log.Println("Server running on port 50051")
 		s := grpc.NewServer()
 
