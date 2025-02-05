@@ -76,7 +76,10 @@ func (m presentationModel) View() string {
 		panic(err)
 	}
 
-	barStyle := lipgloss.NewStyle().AlignHorizontal(lipgloss.Center).Foreground(lipgloss.Color("#888")).Width(90).PaddingBottom(1)
+	barStyle := lipgloss.NewStyle().
+		AlignHorizontal(lipgloss.Center).
+		Foreground(lipgloss.Color("#888")).
+		Width(m.vp.Width - 10).PaddingBottom(1)
 	pageNum, err := strconv.Atoi(m.currentPage)
 
 	if err != nil {
@@ -109,6 +112,10 @@ func (m presentationModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.vp, cmd = m.vp.Update(msg)
 			return m, cmd
 		}
+	case tea.WindowSizeMsg:
+		m.vp.Width = int(msg.Width - 2)
+		m.vp.Height = int(msg.Height - 2)
+		return m, nil
 	}
 
 	return m, nil
