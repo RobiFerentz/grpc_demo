@@ -24,3 +24,7 @@
 
 - Make sure you install the [protobuf tools](https://grpc.io/docs/protoc-installation/)
 - run `sh ./gen.sh` to generate the Go and TS files.
+
+### Repository
+
+[https://github.com/RobiFerentz/grpc_demo](https://github.com/RobiFerentz/grpc_demo)
