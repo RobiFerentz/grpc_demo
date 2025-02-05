@@ -4,21 +4,25 @@ import (
 	"context"
 	"log"
 	"net"
+	"strconv"
 	"time"
 
 	pb "github.com/robiferentz/grpc-go/main/protobuf"
 	"google.golang.org/grpc"
 )
 
+var port = 50051
+
 func run_server() {
 
 	go func() {
-		lis, err := net.Listen("tcp", ":50051")
+		str_port := strconv.Itoa(port)
+		lis, err := net.Listen("tcp", ":"+str_port)
 		if err != nil {
 			log.Fatalf("failed to listen: %v", err)
 		}
 		defer lis.Close()
-		log.Println("Server running on port 50051")
+		log.Println("Server running on port " + str_port)
 		s := grpc.NewServer()
 
 		pb.RegisterGrpcServerServer(s, &server{
